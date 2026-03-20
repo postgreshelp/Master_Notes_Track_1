@@ -1,6 +1,6 @@
 # Day 1 — Why PostgreSQL?
 
-These are rough session notes from the opening module of Track 1. The goal of this session is to answer the first question every student brings into the room: *"Why should I invest time in PostgreSQL specifically?"* Three answers were discussed — open source, ecosystem variety, and extensibility — each backed with real industry evidence.
+These are rough session notes from the opening module of Track 1. The goal of this session is to answer the first question every participant brings into the room: *"Why should I invest time in PostgreSQL specifically?"* Three answers were discussed — open source, ecosystem variety, and extensibility — each backed with real industry evidence.
 
 ---
 
