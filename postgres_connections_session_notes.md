@@ -203,6 +203,7 @@ ConnectLab supports **live tuning** via HikariCP's MXBean interface — pool par
 | `leak-detection-threshold` | 15000 ms |
 
 ---
+![Pool Settings Tuner](images/6.jpg)
 
 ### 7.2 Step 1 — Baseline: App Started, No Load
 
