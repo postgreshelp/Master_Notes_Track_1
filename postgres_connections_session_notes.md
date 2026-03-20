@@ -187,7 +187,7 @@ FATAL:  terminating connection due to idle-in-transaction timeout
 
 ## 7. ConnectLab Live Demo — HikariCP Pool Behavior Under Load
 
-This section documents a live demo using **ConnectLab** (`connectlab-1.0.0.jar`) — a Spring Boot application that visualises HikariCP connection pool behaviour in real time. The goal was to prove, using `ps -ef`, exactly what PostgreSQL sees when pool pressure changes.
+This section documents a live demo using **ConnectLab**  — a Spring Boot application that visualises HikariCP connection pool behaviour in real time. The goal was to prove, using `ps -ef`, exactly what PostgreSQL sees when pool pressure changes.
 
 ### 7.1 Pool Configuration (Pool Settings Tuner)
 
@@ -268,8 +268,6 @@ Pool is fully saturated. The 10 excess threads are **blocked inside HikariCP** w
 **`ps -ef` captured during this spike:**
 
 ```
-postgres   35342    3686  15 11:19 pts/1   java -jar connectlab-1.0.0.jar
-
 postgres   35649   35533   0 11:22 ?   postgres: postgres connectlab 127.0.0.1(55728) SELECT
 postgres   35650   35533   0 11:22 ?   postgres: postgres connectlab 127.0.0.1(55738) SELECT
 postgres   35651   35533   0 11:22 ?   postgres: postgres connectlab 127.0.0.1(55750) SELECT
