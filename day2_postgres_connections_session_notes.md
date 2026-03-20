@@ -7,7 +7,7 @@ This document captures key concepts from a live lab session covering PostgreSQL 
 
 - [1. PostgreSQL Process Architecture](#1-postgresql-process-architecture)
 - [2. pg\_hba.conf — Connection Filtering](#2-pg_hbaconf--connection-filtering)
-- [3. kill -9 — Why It's a Crime](#3-kill--9--why-its-a-crime)
+- [3. kill -9 on a PostgreSQL Process — Why It's a Crime](#3-kill--9-on-a-postgresql-process--why-its-a-crime)
 - [4. Safe Ways to Terminate Sessions](#4-safe-ways-to-terminate-sessions)
 - [5. Backend Process States](#5-backend-process-states)
 - [6. Session & Statement Timeout Controls](#6-session--statement-timeout-controls)
@@ -73,7 +73,7 @@ The second rule (`md5` for all databases) never gets evaluated for `connectlab` 
 
 ---
 
-## 3. `kill -9` on a PostgreSQL Background Process — Why It's a Crime
+## 3. kill -9 on a PostgreSQL Process — Why It's a Crime
 
 Sending `SIGKILL` directly to any PostgreSQL background process bypasses PostgreSQL's internal shutdown protocol. The postmaster detects the abnormal exit, terminates all other active backends, and triggers crash recovery.
 
