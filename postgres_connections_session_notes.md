@@ -245,6 +245,7 @@ Only background workers visible. No client backend processes — HikariCP has no
 Pool is half utilised. No queuing. All 5 requests reached PostgreSQL immediately.
 
 ---
+![Spike Simulator — 5 connections, pool pressure 50%](images/2.jpg)
 
 ### 7.4 Step 3 — Heavy Spike: 20 Connections Against pool_size=10
 
@@ -261,6 +262,8 @@ Pool is half utilised. No queuing. All 5 requests reached PostgreSQL immediately
 | Pool Pressure | **100%** 🔴 |
 
 Pool is fully saturated. The 10 excess threads are **blocked inside HikariCP** waiting for a connection to free up — PostgreSQL never saw them.
+
+![Spike Simulator —20 connections, pool pressure 50%](images/4.jpg)
 
 **`ps -ef` captured during this spike:**
 
