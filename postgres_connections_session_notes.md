@@ -331,37 +331,48 @@ This is the direct, observable proof of why connection pooling exists.
 ## 9. Questions Discussed in This Session
 
 **Q1. Every session creates a new process — so 100 connections = 100 processes in `ps`?**
+
 Yes. PostgreSQL uses a process-per-connection model. Each client connection forks a new backend process from the postmaster. This is why connection pooling exists.
 
 **Q2. If pgBouncer is in session mode, does `ps` show `pool_size` backends forever?**
+
 Not forever — they persist as long as clients are connected or until `server_idle_timeout` elapses after a client disconnects. `pool_size` is the ceiling; you will never see more backends than that value regardless of how many clients connect.
 
 **Q3. Those 10 idle backends in `ps` — will they go away on their own?**
+
 Only if `idle_session_timeout` is set. With the default of `0`, they sit indefinitely as long as the client (e.g., HikariCP pool) holds the connection open. TCP keepalive (`tcp_keepalive_time = 7200s` by default) only helps with silently dead clients, not live idle ones.
 
 **Q4. What does `tcp_keepalives_idle = 0` mean in PostgreSQL?**
+
 It means PostgreSQL defers to the OS default, which on Linux is `7200` seconds (`cat /proc/sys/net/ipv4/tcp_keepalive_time`). A dead client won't be detected for approximately 2 hours 11 minutes under default settings.
 
 **Q5. Is `kill -9` on a PostgreSQL process safe?**
+
 No — it is the one thing you should never do. PostgreSQL treats any abnormal process exit as a potential shared memory corruption event, terminates all active sessions, and triggers crash recovery. Use `pg_terminate_backend()` from SQL instead.
 
 **Q6. What is the difference between `pg_cancel_backend()` and `pg_terminate_backend()`?**
+
 `pg_cancel_backend()` sends `SIGINT` — cancels the current query but leaves the connection alive. `pg_terminate_backend()` sends `SIGTERM` — disconnects the session entirely. In production, prefer cancel first; terminate only when the session must be removed.
 
 **Q7. What is the `idle in transaction` state and why is it dangerous?**
+
 A session is `idle in transaction` when it has started a transaction (`BEGIN`) and issued at least one statement but has not yet committed or rolled back. This state holds row-level locks and blocks autovacuum from reclaiming dead tuples on affected tables. `idle_in_transaction_session_timeout` is the safety net for this.
 
 **Q8. If HikariCP pool is set to 20, does the 21st request get blocked at the client level?**
+
 Yes — exactly. The 21st thread blocks inside HikariCP waiting for a connection to free up, controlled by `connectionTimeout` (default 30 seconds). PostgreSQL never sees it at all. The ConnectLab spike demo with 20 requests against `pool_size=10` proved this live — `ps` showed exactly 10 backends while 10 threads waited silently inside Java.
 
 **Q9. Does having 50 idle sessions sitting in `ps` hurt performance?**
+
 No — memory is approximately 1.9 MB per backend, so 50 idle sessions is around 95 MB total, which is negligible. The only secondary effect is that each backend occupies a slot in PostgreSQL's ProcArray, which is scanned during snapshot acquisition for MVCC. At 50 backends this overhead is immeasurable; it only becomes relevant above ~500 connections.
 
 **Q10. With pgBouncer `pool_size=10` and two databases configured, do I get 10 shared connections or 20 total?**
+
 20 total. `pool_size` applies **per (database, user) pair**. Each unique combination gets its own independent pool. Verify live with:
 ```sql
 psql -p 6432 pgbouncer -c "SHOW POOLS"
 ```
 
 **Q11. pgbench showed TPS doubled and latency halved through pgBouncer, but initial connection time was higher — is that expected?**
+
 Yes, completely expected. pgBouncer accepted 800 client connections and handled auth negotiation for each, which adds overhead to the initial connection phase. But actual query execution was far more efficient because only `pool_size` backends were doing real work. In production, connections are established once and reused, so the higher initial connection time is a one-time cost that does not matter.
