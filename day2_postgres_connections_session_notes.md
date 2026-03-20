@@ -3,18 +3,25 @@
 This document captures key concepts from a live lab session covering PostgreSQL backend process architecture, connection management, pg_hba.conf rules, process states, timeout controls, safe process termination techniques, and a ConnectLab live demo showing HikariCP pool behavior under load. Each section includes actual terminal output observed during the session, followed by all questions discussed.
 
 ---
-
 ## Table of Contents
 
 - [1. PostgreSQL Process Architecture](#1-postgresql-process-architecture)
 - [2. pg\_hba.conf — Connection Filtering](#2-pg_hbaconf--connection-filtering)
-- [3. `kill -9` on a PostgreSQL Background Process — Why It's a Crime](#3-kill--9--why-its-a-crime)
+- [3. kill -9 — Why It's a Crime](#3-kill--9--why-its-a-crime)
 - [4. Safe Ways to Terminate Sessions](#4-safe-ways-to-terminate-sessions)
 - [5. Backend Process States](#5-backend-process-states)
 - [6. Session & Statement Timeout Controls](#6-session--statement-timeout-controls)
 - [7. ConnectLab Live Demo — HikariCP Pool Behavior Under Load](#7-connectlab-live-demo--hikarcp-pool-behavior-under-load)
-- [8. Summary of Error / Termination Messages](#8-summary-of-error--termination-messages)
-- [9. Questions Discussed in This Session](#9-questions-discussed-in-this-session)
+  - [7.1 Phase 1 — App Started, No Load](#71-phase-1--app-started-no-load-1201)
+  - [7.2 Phase 2 — Spike Fired: 10 Concurrent Connections](#72-phase-2--spike-fired-10-concurrent-connections-1201)
+  - [7.3 Phase 3 — Spike Ends, Before idleTimeout](#73-phase-3--spike-ends-before-idletimeout-1201-1202)
+  - [7.4 Phase 4 — After idleTimeout](#74-phase-4--after-idletimeout-1202)
+  - [7.5 Complete Timeline](#75-complete-timeline)
+  - [7.6 Key Takeaway](#76-key-takeaway)
+  - [7.7 Heavy Spike: 20 Connections Against pool_size=10](#77-heavy-spike-20-connections-against-pool_size10)
+- [8. pgbench — Direct vs pgBouncer Comparison](#8-pgbench--direct-vs-pgbouncer-comparison)
+- [9. Summary of Error / Termination Messages](#9-summary-of-error--termination-messages)
+- [10. Questions Discussed in This Session](#10-questions-discussed-in-this-session)
 
 ---
 
